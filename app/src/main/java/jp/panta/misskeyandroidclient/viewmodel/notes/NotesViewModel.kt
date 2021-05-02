@@ -191,6 +191,10 @@ class NotesViewModel(
                 if(result) {
                     syncAddReactionHistory(reaction)
                 }
+            }.onFailure {
+                withContext(Dispatchers.Main) {
+                    statusMessage.event = "リアクションエラー: $it"
+                }
             }
 
 
