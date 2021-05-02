@@ -607,7 +607,7 @@ class MiApplication : Application(), MiCore {
             mAccountsState.value = tmpAccounts
             connectionStatus.postValue(ConnectionStatus.SUCCESS)
 
-            setUpMetaMap(tmpAccounts)
+            setUpMetaMap(tmpAccounts).awaitAll()
 
         }catch(e: Exception){
             //isSuccessCurrentAccount.postValue(false)
@@ -670,14 +670,11 @@ class MiApplication : Application(), MiCore {
         }
     }
 
-    private suspend fun setUpMetaMap(accounts: List<Account>){
-        try{
-            // NOTE: メモリ等にインスタンスを読み込んでおく
-            accounts.forEach { ac ->
-                loadInstanceMetaAndSetupAPI(ac.instanceDomain)
-            }
-        }catch(e: Exception){
-            logger.error("meta取得中にエラー発生", e = e)
+    private fun setUpMetaMap(accounts: List<Account>) = accounts.map{ ac ->
+        ac.instanceDomain
+    }.distinct().map {
+        applicationScope.async(Dispatchers.IO) {
+            loadInstanceMetaAndSetupAPI(it)
         }
     }
 
