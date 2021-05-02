@@ -1,6 +1,7 @@
 package jp.panta.misskeyandroidclient.model.instance
 
 import android.util.Log
+import kotlinx.coroutines.withTimeout
 import java.util.concurrent.ConcurrentHashMap
 
 class MediatorMetaStore(
@@ -14,7 +15,9 @@ class MediatorMetaStore(
             val local = metaRepository.get(instanceDomain)
             if(local == null || isUpdateRepository){
                 val remote = try{
-                    metaStore.get(instanceDomain)
+                    withTimeout(1000) {
+                        metaStore.get(instanceDomain)
+                    }
                 }catch(e: Exception){
                     null
                 }
