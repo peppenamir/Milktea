@@ -69,9 +69,9 @@ const parseJsonMiddleware = (req, res, next) => {
     }
 }
 
-app.post('/webpushcallback', rawBodyMiddlware, decodeBodyMiddleware, parseJsonMiddleware, switchLangMiddleware ,(req, res)=>{
+app.post('/webpushcallback', rawBodyMiddlware, decodeBodyMiddleware, parseJsonMiddleware, switchLangMiddleware ,(req, res, next)=>{
     let deviceToken = req.query.deviceToken;
-    let accountId = req.query.accountId;
+    let accountId = reqwebpushcallback.query.accountId;
     console.log('call webpushcallback');
     if(!(deviceToken && accountId)) {
         console.warn('無効な値');
@@ -106,13 +106,15 @@ app.post('/webpushcallback', rawBodyMiddlware, decodeBodyMiddleware, parseJsonMi
     }
     console.log(message);
     
-    messaging.send(message).then((res)=>{
-        console.log(`send:${res}`);
+    messaging.send(message).then((r)=>{
+        console.log(`send:${r}`);
+        res.json({status: 'ok'});
+        
     }).catch((e)=>{
         console.error('message送信失敗', e);
+        next(e);
     });
 
-    res.json({status: 'ok'});
 });
 
 app.get('/health', switchLangMiddleware,(req, res)=>{
