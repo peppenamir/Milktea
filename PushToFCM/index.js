@@ -79,7 +79,7 @@ app.post('/webpushcallback', rawBodyMiddlware, decodeBodyMiddleware, parseJsonMi
     }
 
     if(req.decodeJson.type != 'notification') {
-        return;
+        return res.status(400).end();
     }
     let convertedNotification = notificationBuilder.generateNotification(res, req.decodeJson.body);
 

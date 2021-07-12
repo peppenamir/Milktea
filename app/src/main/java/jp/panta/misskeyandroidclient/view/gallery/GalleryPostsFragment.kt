@@ -2,8 +2,11 @@ package jp.panta.misskeyandroidclient.view.gallery
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +18,7 @@ import jp.panta.misskeyandroidclient.R
 import jp.panta.misskeyandroidclient.api.APIError
 import jp.panta.misskeyandroidclient.databinding.FragmentSwipeRefreshRecyclerViewBinding
 import jp.panta.misskeyandroidclient.model.account.page.Pageable
+import jp.panta.misskeyandroidclient.ui.gallery.GalleryPostsScreen
 import jp.panta.misskeyandroidclient.util.PageableState
 import jp.panta.misskeyandroidclient.util.State
 import jp.panta.misskeyandroidclient.util.StateContent
@@ -22,7 +26,7 @@ import jp.panta.misskeyandroidclient.viewmodel.MiCore
 import jp.panta.misskeyandroidclient.viewmodel.gallery.GalleryPostsViewModel
 import kotlinx.coroutines.flow.collect
 
-class GalleryPostsFragment : Fragment(R.layout.fragment_swipe_refresh_recycler_view){
+class GalleryPostsFragment : Fragment(){
 
     companion object {
         private const val EXTRA_ACCOUNT_ID = "jp.panta.misskeyandroidclient.view.gallery.ACCOUNT_ID"
@@ -43,7 +47,31 @@ class GalleryPostsFragment : Fragment(R.layout.fragment_swipe_refresh_recycler_v
     val binding: FragmentSwipeRefreshRecyclerViewBinding by dataBinding()
 
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+
+        val pageable = arguments?.getSerializable(EXTRA_PAGEABLE) as Pageable.Gallery
+        var accountId = arguments?.getLong(EXTRA_ACCOUNT_ID, -1)
+        if(accountId == -1L) {
+            accountId = null
+        }
+
+
+
+        val miCore = requireContext().applicationContext as MiCore
+        val viewModel = ViewModelProvider(this, GalleryPostsViewModel.Factory(pageable, accountId, miCore))[GalleryPostsViewModel::class.java]
+
+        return ComposeView(requireContext()).also {
+            it.setContent {
+                GalleryPostsScreen(galleryPostsViewModel = viewModel)
+            }
+        }
+    }
+
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val pageable = arguments?.getSerializable(EXTRA_PAGEABLE) as Pageable.Gallery
@@ -113,6 +141,6 @@ class GalleryPostsFragment : Fragment(R.layout.fragment_swipe_refresh_recycler_v
             }
 
         })
-    }
+    }*/
 
 }
