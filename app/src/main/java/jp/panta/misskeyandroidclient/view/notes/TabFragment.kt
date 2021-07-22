@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package jp.panta.misskeyandroidclient.view.notes
 
 import android.content.Context
@@ -24,6 +26,7 @@ import jp.panta.misskeyandroidclient.view.ScrollableTop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
+@Suppress("DEPRECATION")
 class TabFragment : Fragment(R.layout.fragment_tab), ScrollableTop{
 
 
