@@ -6,11 +6,12 @@ import android.util.Log
 
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.wada811.databinding.dataBinding
 import jp.panta.misskeyandroidclient.KeyStore
 import jp.panta.misskeyandroidclient.MiApplication
@@ -28,7 +29,7 @@ class TabFragment : Fragment(R.layout.fragment_tab), ScrollableTop{
 
 
 
-    private var mPagerAdapter: TimelinePagerAdapter? = null
+    private lateinit var mPagerAdapter: TimelinePagerAdapter
 
     private val binding: FragmentTabBinding by dataBinding()
 
@@ -43,14 +44,16 @@ class TabFragment : Fragment(R.layout.fragment_tab), ScrollableTop{
         val includeRenotedMyNotes = sharedPreferences.getBoolean(KeyStore.BooleanKey.INCLUDE_RENOTED_MY_NOTES.name, true)
         val includeLocalRenotes = sharedPreferences.getBoolean(KeyStore.BooleanKey.INCLUDE_LOCAL_RENOTES.name, true)
 
-        mPagerAdapter = binding.viewPager.adapter as? TimelinePagerAdapter
-        if(mPagerAdapter == null){
-            mPagerAdapter = TimelinePagerAdapter(this.childFragmentManager, emptyList())
+        val pager = binding.viewPager.adapter as? TimelinePagerAdapter
+        if(pager == null){
+            mPagerAdapter = TimelinePagerAdapter(this, emptyList())
             binding.viewPager.adapter = mPagerAdapter
         }
 
 
-
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = mPagerAdapter.pages[position].title
+        }.attach()
         Log.d("TabFragment", "設定:$includeLocalRenotes, $includeRenotedMyNotes, $includeMyRenotes")
         miApp.getCurrentAccount().filterNotNull().flowOn(Dispatchers.IO).onEach { account ->
             val pages = account.pages
@@ -58,16 +61,9 @@ class TabFragment : Fragment(R.layout.fragment_tab), ScrollableTop{
 
             Log.d("TabFragment", "pages:$pages")
 
-
-            mPagerAdapter?.setList(
-                account,
-                pages.sortedBy {
-                    it.weight
-                })
-            //mPagerAdapter?.notifyDataSetChanged()
+            mPagerAdapter.setPages(pages.sortedBy { it.weight })
 
 
-            binding.tabLayout.setupWithViewPager(binding.viewPager)
 
 
             if(pages.size <= 1){
@@ -88,57 +84,68 @@ class TabFragment : Fragment(R.layout.fragment_tab), ScrollableTop{
     }
 
 
-    class TimelinePagerAdapter( fragmentManager: FragmentManager, list: List<Page>) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT){
-        var requestBaseList: List<Page> = list
+    class TimelinePagerAdapter( fragment: Fragment, list: List<Page>) : FragmentStateAdapter(fragment){
+
+
+        var pages: List<Page> = list
             private set
-        private var oldRequestBaseSetting = requestBaseList
+
+        private var oldPages: List<Page> = emptyList()
+
+        private val diffUtilCallback = object : DiffUtil.Callback() {
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return pages[newItemPosition] == oldPages[oldItemPosition]
+            }
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return pages[newItemPosition].pageId == oldPages[oldItemPosition].pageId
+            }
+
+            override fun getNewListSize(): Int {
+                return pages.size
+            }
+
+            override fun getOldListSize(): Int {
+                return oldPages.size
+            }
+
+        }
 
         var account: Account? = null
 
-        val scrollableTopFragments = ArrayList<ScrollableTop>()
-        private val mFragments = ArrayList<Fragment>()
+        val scrollableTopFragments = HashMap<Page, ScrollableTop>()
 
-        override fun getCount(): Int {
-            return requestBaseList.size
-        }
-
-        override fun getItem(position: Int): Fragment {
-            Log.d("getItem", "$position, ${requestBaseList[position].pageable().javaClass}")
-            val item = requestBaseList[position]
-            val fragment = PageableFragmentFactory.create(item)
-
-            if(fragment is ScrollableTop){
-                scrollableTopFragments.add(fragment)
+        override fun createFragment(position: Int): Fragment {
+            val item = pages[position]
+            return PageableFragmentFactory.create(item).also {
+                if(it is ScrollableTop) {
+                    scrollableTopFragments[item] = it
+                }
             }
-            mFragments.add(fragment)
-            return fragment
+        }
+
+        override fun getItemCount(): Int {
+            return pages.size
+        }
+
+        override fun containsItem(itemId: Long): Boolean {
+            return pages.any { it.pageId == itemId }
+        }
+
+        override fun getItemId(position: Int): Long {
+            return pages[position].pageId
+        }
+
+        fun setPages(pages: List<Page>) {
+            this.oldPages = this.pages
+            this.pages = pages
+            val result = DiffUtil.calculateDiff(diffUtilCallback)
+            result.dispatchUpdatesTo(this)
         }
 
 
-        override fun getPageTitle(position: Int): String{
-            val page = requestBaseList[position]
-            return page.title
-        }
 
-        override fun getItemPosition(any: Any): Int {
-            val target = any as Fragment
-            if(mFragments.contains(target)){
-                return PagerAdapter.POSITION_UNCHANGED
-            }
-            return PagerAdapter.POSITION_NONE
-        }
-
-
-        fun setList(account: Account, list: List<Page>){
-            mFragments.clear()
-            oldRequestBaseSetting = requestBaseList
-            requestBaseList = list
-            this.account = account
-            if(requestBaseList != oldRequestBaseSetting){
-                notifyDataSetChanged()
-            }
-
-        }
 
 
 
@@ -150,7 +157,7 @@ class TabFragment : Fragment(R.layout.fragment_tab), ScrollableTop{
 
     private fun showTopCurrentFragment(){
         try{
-            mPagerAdapter?.scrollableTopFragments?.forEach{
+            mPagerAdapter.scrollableTopFragments.values.forEach{
                 it.showTop()
             }
         }catch(e: UninitializedPropertyAccessException){
