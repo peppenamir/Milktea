@@ -201,10 +201,7 @@ class MainActivity : AppCompatActivity(){
 
         startService(Intent(this, NotificationService::class.java))
         binding.appBarMain.contentMain.backgroundImage
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentBase) as NavHostFragment
-
-
-        binding.appBarMain.bottomNavigation.setupWithNavController(navHostFragment.navController)
+        binding.appBarMain.bottomNavigation.setupWithNavController(navHostFragment().navController)
     }
 
 
@@ -298,10 +295,9 @@ class MainActivity : AppCompatActivity(){
             drawerLayout.isDrawerOpen(GravityCompat.START) -> {
                 drawerLayout.closeDrawer(GravityCompat.START)
             }
-            // TODO: 戻るボタン押下時にBottomNavigationも動作するようにする
-            /*mBottomNavigationAdapter.currentMenuItem?.itemId != R.id.navigation_home -> {
-                mBottomNavigationAdapter.setCurrentFragment(R.id.navigation_home)
-            }*/
+            navHostFragment().navController.currentDestination?.id != R.id.navigation_home -> {
+                navHostFragment().navController.popBackStack()
+            }
             else -> {
                 if(mBackPressedDelegate.back()){
                     super.onBackPressed()
@@ -388,6 +384,10 @@ class MainActivity : AppCompatActivity(){
             findNavController(R.id.fragmentBase).navigate(R.id.navigation_home)
             //mBottomNavigationAdapter.setCurrentFragment(R.id.navigation_home)
         }
+    }
+
+    private fun navHostFragment() : NavHostFragment{
+        return supportFragmentManager.findFragmentById(R.id.fragmentBase) as NavHostFragment
     }
 
 }
