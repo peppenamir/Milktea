@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.annotation.IdRes
-import androidx.annotation.MenuRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView

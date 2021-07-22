@@ -3,7 +3,6 @@ package jp.panta.misskeyandroidclient
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -15,12 +14,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.wada811.databinding.dataBinding
 import jp.panta.misskeyandroidclient.api.MisskeyAPI
@@ -37,18 +37,12 @@ import jp.panta.misskeyandroidclient.model.streaming.stateEvent
 import jp.panta.misskeyandroidclient.model.users.User
 import jp.panta.misskeyandroidclient.streaming.ChannelBody
 import jp.panta.misskeyandroidclient.streaming.channel.ChannelAPI
-import jp.panta.misskeyandroidclient.util.BottomNavigationAdapter
 import jp.panta.misskeyandroidclient.util.DoubleBackPressedFinishDelegate
 import jp.panta.misskeyandroidclient.util.getPreferenceName
-import jp.panta.misskeyandroidclient.view.ScrollableTop
 import jp.panta.misskeyandroidclient.view.account.AccountSwitchingDialog
-import jp.panta.misskeyandroidclient.view.messaging.MessagingHistoryFragment
 import jp.panta.misskeyandroidclient.view.notes.ActionNoteHandler
-import jp.panta.misskeyandroidclient.view.notes.TabFragment
 import jp.panta.misskeyandroidclient.view.notes.editor.SimpleEditorFragment
-import jp.panta.misskeyandroidclient.view.notification.NotificationMentionFragment
 import jp.panta.misskeyandroidclient.view.notification.notificationMessageScope
-import jp.panta.misskeyandroidclient.view.search.SearchTopFragment
 import jp.panta.misskeyandroidclient.view.settings.activities.PageSettingActivity
 import jp.panta.misskeyandroidclient.view.strings_helper.webSocketStateMessageScope
 import jp.panta.misskeyandroidclient.viewmodel.MiCore
@@ -65,7 +59,6 @@ class MainActivity : AppCompatActivity(){
     @ExperimentalCoroutinesApi
     private lateinit var mAccountViewModel: AccountViewModel
 
-    private lateinit var mBottomNavigationAdapter: MainBottomNavigationAdapter
 
     private var mSettingStore: SettingStore? = null
 
@@ -207,43 +200,11 @@ class MainActivity : AppCompatActivity(){
         }
 
         startService(Intent(this, NotificationService::class.java))
-        mBottomNavigationAdapter = MainBottomNavigationAdapter(savedInstanceState, binding.appBarMain.bottomNavigation)
-
-    }
-
-
-    inner class MainBottomNavigationAdapter(savedInstanceState: Bundle?, bottomNavigation: BottomNavigationView)
-        : BottomNavigationAdapter(bottomNavigation, supportFragmentManager, R.id.navigation_home, R.id.content_main, savedInstanceState){
-
-        var currentMenuItem: MenuItem? = null
-
-        override fun viewChanged(menuItem: MenuItem, fragment: Fragment) {
-            super.viewChanged(menuItem, fragment)
-            when(menuItem.itemId){
-                R.id.navigation_home -> changeTitle(getString(R.string.menu_home))
-                R.id.navigation_search -> changeTitle(getString(R.string.search))
-                R.id.navigation_notification -> changeTitle(getString(R.string.notification))
-                R.id.navigation_message_list -> changeTitle(getString(R.string.message))
-            }
-            currentMenuItem = menuItem
-        }
-        override fun getItem(menuItem: MenuItem): Fragment? {
-            return when(menuItem.itemId){
-                R.id.navigation_home -> TabFragment()
-                R.id.navigation_search -> SearchTopFragment()
-                R.id.navigation_notification -> NotificationMentionFragment()
-                R.id.navigation_message_list -> MessagingHistoryFragment()
-                else -> null
-            }
-        }
-
-        override fun menuRetouched(menuItem: MenuItem, fragment: Fragment) {
-            if(fragment is ScrollableTop){
-                fragment.showTop()
-            }
-        }
+        binding.appBarMain.contentMain.backgroundImage
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentBase) as NavHostFragment
 
 
+        binding.appBarMain.bottomNavigation.setupWithNavController(navHostFragment.navController)
     }
 
 
@@ -337,9 +298,10 @@ class MainActivity : AppCompatActivity(){
             drawerLayout.isDrawerOpen(GravityCompat.START) -> {
                 drawerLayout.closeDrawer(GravityCompat.START)
             }
-            mBottomNavigationAdapter.currentMenuItem?.itemId != R.id.navigation_home -> {
+            // TODO: 戻るボタン押下時にBottomNavigationも動作するようにする
+            /*mBottomNavigationAdapter.currentMenuItem?.itemId != R.id.navigation_home -> {
                 mBottomNavigationAdapter.setCurrentFragment(R.id.navigation_home)
-            }
+            }*/
             else -> {
                 if(mBackPressedDelegate.back()){
                     super.onBackPressed()
@@ -405,16 +367,6 @@ class MainActivity : AppCompatActivity(){
     }
 
 
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        Log.d("MainActivity", "#onSaveInstanceStateが呼び出された")
-
-        mBottomNavigationAdapter.saveState(outState)
-    }
-
-
     private fun setBackgroundImage(){
         val path = SettingStore(getSharedPreferences(getPreferenceName() ,Context.MODE_PRIVATE)).backgroundImagePath
         Glide.with(this)
@@ -433,7 +385,8 @@ class MainActivity : AppCompatActivity(){
             View.VISIBLE
         }
         if(getSettingStore().isClassicUI){
-            mBottomNavigationAdapter.setCurrentFragment(R.id.navigation_home)
+            findNavController(R.id.fragmentBase).navigate(R.id.navigation_home)
+            //mBottomNavigationAdapter.setCurrentFragment(R.id.navigation_home)
         }
     }
 
