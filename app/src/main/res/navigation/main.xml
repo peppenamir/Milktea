@@ -20,4 +20,10 @@
             android:id="@+id/navigation_message_list"
             android:name="jp.panta.misskeyandroidclient.view.messaging.MessagingHistoryFragment"
             android:label="@string/message" />
+    <fragment
+            android:id="@+id/navigation_favorite_notes"
+            android:name="jp.panta.misskeyandroidclient.view.notes.FavoriteNotesScreenFragment"
+            android:label="@string/favorite" />
+
+
 </navigation>

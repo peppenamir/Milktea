@@ -21,9 +21,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.onNavDestinationSelected
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.*
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.wada811.databinding.dataBinding
@@ -90,11 +88,12 @@ class MainActivity : AppCompatActivity(){
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        /*
         binding.navView.setNavigationItemSelectedListener { item ->
             if(item.itemId == R.id.navigation_favorite_notes) {
                 item.onNavDestinationSelected(navHostFragment().navController)
             }
-            /*val activity = when (item.itemId) {
+            val activity = when (item.itemId) {
                 R.id.nav_setting -> SettingsActivity::class.java
                 R.id.nav_drive -> DriveActivity::class.java
                 R.id.navigation_favorite_notes -> FavoriteActivity::class.java
@@ -104,10 +103,10 @@ class MainActivity : AppCompatActivity(){
                 R.id.nav_gallery -> GalleryPostsActivity::class.java
                 else -> throw IllegalStateException("未定義なNavigation Itemです")
             }
-            startActivity(Intent(this, activity))*/
+            startActivity(Intent(this, activity))
             binding.drawerLayout.closeDrawerWhenOpened()
             false
-        }
+        }*/
 
         binding.appBarMain.fab.setOnClickListener{
             startActivity(Intent(this, NoteEditorActivity::class.java))
@@ -209,12 +208,23 @@ class MainActivity : AppCompatActivity(){
 
         startService(Intent(this, NotificationService::class.java))
 
-        binding.appBarMain.bottomNavigation.setupWithNavController(navHostFragment().navController)
-        AppBarConfiguration(navHostFragment().navController.graph, binding.drawerLayout)
+        navHostFragment().navController.also { navController ->
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                supportActionBar?.title = destination.label.toString()
+            }
+            val appBarConfig = AppBarConfiguration.Builder(R.id.navigation_favorite_notes, R.id.navigation_home, R.id.navigation_search, R.id.navigation_notification, R.id.navigation_message_list)
+                .setOpenableLayout(binding.drawerLayout)
+                .build()
+            setupActionBarWithNavController(navController, appBarConfig)
+            binding.appBarMain.bottomNavigation.setupWithNavController(navController)
+            binding.navView.setupWithNavController(navController)
 
-        navHostFragment().navController.addOnDestinationChangedListener { _, destination, _ ->
-            supportActionBar?.title = destination.label.toString()
         }
+        //val appBarConfig = AppBarConfiguration(navHostFragment().navController.graph, binding.drawerLayout)
+
+        //setupActionBarWithNavController(navHostFragment().navController, appBarConfig)
+
+
     }
 
 

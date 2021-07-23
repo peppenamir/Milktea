@@ -8,7 +8,8 @@
         <item
             android:id="@+id/navigation_favorite_notes"
             android:icon="@drawable/ic_star_black_24dp"
-            android:title="@string/nav_like"/>
+            android:title="@string/nav_like"
+            android:menuCategory="secondary"/>
         <item
             android:id="@+id/nav_list"
             android:icon="@drawable/ic_format_list_bulleted_black_24dp"
