@@ -17,8 +17,12 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -32,6 +36,7 @@ import jp.panta.misskeyandroidclient.model.TaskState
 import jp.panta.misskeyandroidclient.model.account.Account
 import jp.panta.misskeyandroidclient.model.core.ConnectionStatus
 import jp.panta.misskeyandroidclient.model.notes.Note
+import jp.panta.misskeyandroidclient.model.notes.Visibility
 import jp.panta.misskeyandroidclient.model.settings.SettingStore
 import jp.panta.misskeyandroidclient.model.streaming.stateEvent
 import jp.panta.misskeyandroidclient.model.users.User
@@ -86,17 +91,20 @@ class MainActivity : AppCompatActivity(){
         toggle.syncState()
 
         binding.navView.setNavigationItemSelectedListener { item ->
-            val activity = when (item.itemId) {
+            if(item.itemId == R.id.navigation_favorite_notes) {
+                item.onNavDestinationSelected(navHostFragment().navController)
+            }
+            /*val activity = when (item.itemId) {
                 R.id.nav_setting -> SettingsActivity::class.java
                 R.id.nav_drive -> DriveActivity::class.java
-                R.id.nav_favorite -> FavoriteActivity::class.java
+                R.id.navigation_favorite_notes -> FavoriteActivity::class.java
                 R.id.nav_list -> ListListActivity::class.java
                 R.id.nav_antenna -> AntennaListActivity::class.java
                 R.id.nav_draft -> DraftNotesActivity::class.java
                 R.id.nav_gallery -> GalleryPostsActivity::class.java
                 else -> throw IllegalStateException("未定義なNavigation Itemです")
             }
-            startActivity(Intent(this, activity))
+            startActivity(Intent(this, activity))*/
             binding.drawerLayout.closeDrawerWhenOpened()
             false
         }
@@ -200,8 +208,13 @@ class MainActivity : AppCompatActivity(){
         }
 
         startService(Intent(this, NotificationService::class.java))
-        binding.appBarMain.contentMain.backgroundImage
+
         binding.appBarMain.bottomNavigation.setupWithNavController(navHostFragment().navController)
+        AppBarConfiguration(navHostFragment().navController.graph, binding.drawerLayout)
+
+        navHostFragment().navController.addOnDestinationChangedListener { _, destination, _ ->
+            supportActionBar?.title = destination.label.toString()
+        }
     }
 
 

@@ -7,17 +7,17 @@
     <fragment
             android:id="@+id/navigation_home"
             android:name="jp.panta.misskeyandroidclient.view.notes.TabFragment"
-            android:label="TabFragment" />
+            android:label="@string/menu_home" />
     <fragment
             android:id="@+id/navigation_notification"
             android:name="jp.panta.misskeyandroidclient.view.notification.NotificationMentionFragment"
-            android:label="NotificationMentionFragment" />
+            android:label="@string/notification" />
     <fragment
             android:id="@+id/navigation_search"
             android:name="jp.panta.misskeyandroidclient.view.search.SearchTopFragment"
-            android:label="SearchTopFragment" />
+            android:label="@string/search" />
     <fragment
             android:id="@+id/navigation_message_list"
             android:name="jp.panta.misskeyandroidclient.view.messaging.MessagingHistoryFragment"
-            android:label="MessagingHistoryFragment" />
+            android:label="@string/message" />
 </navigation>

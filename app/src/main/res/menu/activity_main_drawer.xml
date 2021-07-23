@@ -6,7 +6,7 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_favorite"
+            android:id="@+id/navigation_favorite_notes"
             android:icon="@drawable/ic_star_black_24dp"
             android:title="@string/nav_like"/>
         <item
