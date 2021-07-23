@@ -12,6 +12,7 @@ import androidx.annotation.MainThread
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.forEach
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -23,6 +24,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.wada811.databinding.dataBinding
 import jp.panta.misskeyandroidclient.api.MisskeyAPI
@@ -208,16 +210,31 @@ class MainActivity : AppCompatActivity(){
 
         startService(Intent(this, NotificationService::class.java))
 
+
         navHostFragment().navController.also { navController ->
-            navController.addOnDestinationChangedListener { _, destination, _ ->
-                supportActionBar?.title = destination.label.toString()
-            }
+
+            val bottomNavigationMenuItems = listOf(R.id.navigation_home, R.id.navigation_search, R.id.navigation_notification, R.id.navigation_message_list)
+            val navigationDrawerMenuItems = listOf(R.id.navigation_favorite_notes)
             val appBarConfig = AppBarConfiguration.Builder(R.id.navigation_favorite_notes, R.id.navigation_home, R.id.navigation_search, R.id.navigation_notification, R.id.navigation_message_list)
                 .setOpenableLayout(binding.drawerLayout)
                 .build()
             setupActionBarWithNavController(navController, appBarConfig)
             binding.appBarMain.bottomNavigation.setupWithNavController(navController)
             binding.navView.setupWithNavController(navController)
+
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                supportActionBar?.title = destination.label.toString()
+                if(!(bottomNavigationMenuItems.contains(destination.id) || navigationDrawerMenuItems.contains(destination.id))) {
+                    // フルスクリーン判定
+                    binding.appBarMain.bottomNavigation.visibility = View.GONE
+                }else {
+                    binding.appBarMain.bottomNavigation.visibility = View.VISIBLE
+                    if(!bottomNavigationMenuItems.contains(destination.id)) {
+                        binding.appBarMain.bottomNavigation.uncheckAllItems()
+                    }
+
+                }
+            }
 
         }
         //val appBarConfig = AppBarConfiguration(navHostFragment().navController.graph, binding.drawerLayout)
@@ -421,4 +438,13 @@ fun MiCore.getCurrentAccountMisskeyAPI(): Flow<MisskeyAPI?>{
             this.getMisskeyAPIProvider().get(baseURL)
         }
     }
+}
+
+
+fun BottomNavigationView.uncheckAllItems() {
+    menu.setGroupCheckable(0, true, false)
+    for (i in 0 until menu.size()) {
+        menu.getItem(i).isChecked = false
+    }
+    menu.setGroupCheckable(0, true, true)
 }
