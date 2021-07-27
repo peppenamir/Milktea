@@ -12,14 +12,11 @@ import androidx.annotation.MainThread
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.core.view.forEach
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
@@ -36,7 +33,6 @@ import jp.panta.misskeyandroidclient.model.TaskState
 import jp.panta.misskeyandroidclient.model.account.Account
 import jp.panta.misskeyandroidclient.model.core.ConnectionStatus
 import jp.panta.misskeyandroidclient.model.notes.Note
-import jp.panta.misskeyandroidclient.model.notes.Visibility
 import jp.panta.misskeyandroidclient.model.settings.SettingStore
 import jp.panta.misskeyandroidclient.model.streaming.stateEvent
 import jp.panta.misskeyandroidclient.model.users.User
@@ -141,7 +137,7 @@ class MainActivity : AppCompatActivity(){
         miApplication.getCurrentAccountMisskeyAPI().filterNotNull().onEach { api ->
             binding.navView.menu.also { menu ->
                 menu.findItem(R.id.nav_antenna).isVisible = api is MisskeyAPIV12
-                menu.findItem(R.id.nav_gallery).isVisible = api is MisskeyAPIV1275
+                menu.findItem(R.id.navigation_gallery).isVisible = api is MisskeyAPIV1275
             }
         }.launchIn(lifecycleScope)
 
@@ -215,7 +211,7 @@ class MainActivity : AppCompatActivity(){
 
             val bottomNavigationMenuItems = listOf(R.id.navigation_home, R.id.navigation_search, R.id.navigation_notification, R.id.navigation_message_list)
             val navigationDrawerMenuItems = listOf(R.id.navigation_favorite_notes)
-            val appBarConfig = AppBarConfiguration.Builder(R.id.navigation_favorite_notes, R.id.navigation_home, R.id.navigation_search, R.id.navigation_notification, R.id.navigation_message_list)
+            val appBarConfig = AppBarConfiguration.Builder(R.id.navigation_favorite_notes, R.id.navigation_home, R.id.navigation_search, R.id.navigation_notification, R.id.navigation_message_list, R.id.navigation_draft)
                 .setOpenableLayout(binding.drawerLayout)
                 .build()
             setupActionBarWithNavController(navController, appBarConfig)

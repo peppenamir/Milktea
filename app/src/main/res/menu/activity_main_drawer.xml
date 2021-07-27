@@ -11,28 +11,33 @@
             android:title="@string/nav_like"
             android:menuCategory="secondary"/>
         <item
-            android:id="@+id/nav_list"
+            android:id="@+id/navigation_list"
             android:icon="@drawable/ic_format_list_bulleted_black_24dp"
-            android:title="@string/nav_list"/>
+            android:title="@string/nav_list"
+            android:menuCategory="secondary"/>
 
         <item
-            android:id="@+id/nav_drive"
+            android:id="@+id/navigation_drive"
             android:icon="@drawable/ic_cloud_black_24dp"
-            android:title="@string/nav_cloud"/>
+            android:title="@string/nav_cloud"
+            android:menuCategory="secondary"/>
         <item
             android:id="@+id/nav_antenna"
             android:icon="@drawable/ic_call_received_black_24dp"
             android:title="@string/antenna"
+            android:menuCategory="secondary"
             />
         <item
-            android:id="@+id/nav_draft"
+            android:id="@+id/navigation_draft"
             android:icon="@drawable/ic_drafts_black_24dp"
             android:title="@string/draft_notes"
+            android:menuCategory="secondary"
             />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/navigation_gallery"
             android:title="@string/gallery"
             android:icon="@drawable/ic_menu_gallery"
+            android:menuCategory="secondary"
                 />
         <item
                 android:id="@+id/nav_setting"

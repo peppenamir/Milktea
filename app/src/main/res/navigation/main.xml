@@ -25,5 +25,27 @@
             android:name="jp.panta.misskeyandroidclient.view.notes.FavoriteNotesScreenFragment"
             android:label="@string/favorite" />
 
+    <activity
+            android:id="@+id/noteEditorActivity"
+            android:name="jp.panta.misskeyandroidclient.NoteEditorActivity"
+            android:label="NoteEditorActivity" />
+    <activity
+            android:id="@+id/navigation_drive"
+            android:name="jp.panta.misskeyandroidclient.DriveActivity"
+            android:label="DriveActivity" />
+    <activity
+            android:id="@+id/navigation_list"
+            android:name="jp.panta.misskeyandroidclient.ListListActivity"
+            android:label="ListListActivity" />
+    <activity
+            android:id="@+id/navigation_gallery"
+            android:name="jp.panta.misskeyandroidclient.AntennaListActivity"
+            android:label="AntennaListActivity" />
+    <activity
+            android:id="@+id/navigation_draft"
+            android:name="jp.panta.misskeyandroidclient.DraftNotesActivity"
+            android:label="DraftNotesActivity" />
+
+
 
 </navigation>
