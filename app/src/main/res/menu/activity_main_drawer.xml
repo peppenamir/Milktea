@@ -22,7 +22,7 @@
             android:title="@string/nav_cloud"
             android:menuCategory="secondary"/>
         <item
-            android:id="@+id/nav_antenna"
+            android:id="@+id/navigation_antenna"
             android:icon="@drawable/ic_call_received_black_24dp"
             android:title="@string/antenna"
             android:menuCategory="secondary"
@@ -40,9 +40,11 @@
             android:menuCategory="secondary"
                 />
         <item
-                android:id="@+id/nav_setting"
+                android:id="@+id/navigation_setting"
                 android:title="@string/setting"
                 android:icon='@drawable/ic_settings_black_24dp'
+                android:menuCategory="secondary"
+
                 />
 
 

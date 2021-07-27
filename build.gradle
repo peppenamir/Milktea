@@ -16,6 +16,8 @@ buildscript {
         classpath "com.google.android.gms:oss-licenses-plugin:0.10.4"
         classpath 'com.google.gms:google-services:4.3.8'
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+        def nav_version = "2.4.0-alpha04"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
     }
 }
 

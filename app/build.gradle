@@ -12,6 +12,8 @@ apply plugin: 'com.google.gms.google-services'
 
 apply plugin: "com.google.android.gms.oss-licenses-plugin"
 
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
 android {
     compileSdkVersion 30
     defaultConfig {

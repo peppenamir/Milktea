@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/main"
         app:startDestination="@id/navigation_home">
 
@@ -26,9 +27,11 @@
             android:label="@string/favorite" />
 
     <activity
-            android:id="@+id/noteEditorActivity"
+            android:id="@+id/navigation_note_editor"
             android:name="jp.panta.misskeyandroidclient.NoteEditorActivity"
-            android:label="NoteEditorActivity" />
+            android:label="NoteEditorActivity">
+
+    </activity>
     <activity
             android:id="@+id/navigation_drive"
             android:name="jp.panta.misskeyandroidclient.DriveActivity"
@@ -38,14 +41,21 @@
             android:name="jp.panta.misskeyandroidclient.ListListActivity"
             android:label="ListListActivity" />
     <activity
-            android:id="@+id/navigation_gallery"
+            android:id="@+id/navigation_antenna"
             android:name="jp.panta.misskeyandroidclient.AntennaListActivity"
             android:label="AntennaListActivity" />
     <activity
             android:id="@+id/navigation_draft"
             android:name="jp.panta.misskeyandroidclient.DraftNotesActivity"
             android:label="DraftNotesActivity" />
-
+    <activity
+            android:id="@+id/navigation_gallery"
+            android:name="jp.panta.misskeyandroidclient.GalleryPostsActivity"
+            android:label="GalleryPostsActivity" />
+    <activity
+            android:id="@+id/navigation_setting"
+            android:name="jp.panta.misskeyandroidclient.SettingsActivity"
+            android:label="SettingsActivity" />
 
 
 </navigation>

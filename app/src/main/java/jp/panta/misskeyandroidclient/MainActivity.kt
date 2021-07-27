@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity(){
         }*/
 
         binding.appBarMain.fab.setOnClickListener{
-            startActivity(Intent(this, NoteEditorActivity::class.java))
+            navHostFragment().navController.navigate(R.id.navigation_note_editor)
         }
 
         val miApplication = application as MiApplication
@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity(){
         // NOTE: 各ばーしょんに合わせMenuを制御している
         miApplication.getCurrentAccountMisskeyAPI().filterNotNull().onEach { api ->
             binding.navView.menu.also { menu ->
-                menu.findItem(R.id.nav_antenna).isVisible = api is MisskeyAPIV12
+                menu.findItem(R.id.navigation_antenna).isVisible = api is MisskeyAPIV12
                 menu.findItem(R.id.navigation_gallery).isVisible = api is MisskeyAPIV1275
             }
         }.launchIn(lifecycleScope)
