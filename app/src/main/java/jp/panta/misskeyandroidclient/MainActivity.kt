@@ -211,7 +211,18 @@ class MainActivity : AppCompatActivity(){
 
             val bottomNavigationMenuItems = listOf(R.id.navigation_home, R.id.navigation_search, R.id.navigation_notification, R.id.navigation_message_list)
             val navigationDrawerMenuItems = listOf(R.id.navigation_favorite_notes)
-            val appBarConfig = AppBarConfiguration.Builder(R.id.navigation_favorite_notes, R.id.navigation_home, R.id.navigation_search, R.id.navigation_notification, R.id.navigation_message_list, R.id.navigation_draft)
+            val appBarConfig = AppBarConfiguration.Builder(
+                R.id.navigation_favorite_notes,
+                R.id.navigation_home,
+                R.id.navigation_search,
+                R.id.navigation_notification,
+                R.id.navigation_message_list,
+                R.id.navigation_draft,
+                R.id.navigation_setting,
+                R.id.navigation_antenna,
+                R.id.navigation_drive,
+                R.id.navigation_gallery
+            )
                 .setOpenableLayout(binding.drawerLayout)
                 .build()
             setupActionBarWithNavController(navController, appBarConfig)
@@ -310,9 +321,6 @@ class MainActivity : AppCompatActivity(){
         mAccountViewModel.showFollowings.observe(this, showFollowingsObserver)
         mAccountViewModel.showFollowers.observe(this, showFollowersObserver)
         mAccountViewModel.showProfile.observe(this, showProfileObserver)
-    }
-    fun changeTitle(title: String?){
-        supportActionBar?.title = title
     }
 
 
